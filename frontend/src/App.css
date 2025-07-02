@@ -1,0 +1,296 @@
+/* App.css */
+
+/* Modern MS Word-style global theme */
+* {
+  box-sizing: border-box;
+}
+
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background: #f4f6fa;
+  color: #222;
+  overflow: hidden;
+}
+
+.word-processor-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f4f6fa;
+  overflow: hidden;
+}
+
+/* Header */
+header {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 1202;
+  flex-shrink: 0;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-right: 32px;
+  letter-spacing: 0.5px;
+}
+
+/* Main Layout */
+.main-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sidebar Toggle */
+.sidebar-toggle {
+  position: absolute;
+  left: 0;
+  top: 64px;
+  z-index: 1201;
+  background: #f8fafc;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* Sidebars */
+.MuiDrawer-paper {
+  background: #fff !important;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  border-right: 1px solid #e5e7eb;
+  height: calc(100vh - 64px) !important;
+  top: 64px !important;
+}
+
+.MuiDrawer-paper[anchor="right"] {
+  border-left: 1px solid #e5e7eb;
+  border-right: none;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.04);
+}
+
+/* Main Content Area */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 48px; /* Space for sidebar toggle */
+}
+
+/* Editor Container */
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 16px;
+  background: #f4f6fa;
+}
+
+/* Editor */
+[contenteditable="true"] {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  padding: 32px;
+  margin: 0;
+  min-height: 500px;
+  outline: none;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  transition: box-shadow 0.2s;
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+}
+
+[contenteditable="true"]:focus {
+  box-shadow: 0 4px 16px rgba(37,99,235,0.08);
+  border: 1.5px solid #2563eb;
+}
+
+[contenteditable="true"]:empty:before {
+  content: "Start typing...";
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* Ribbon */
+.MuiAppBar-root {
+  background: #f8fafc !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.MuiTabs-root {
+  background: #f8fafc;
+}
+
+.MuiTab-root {
+  font-weight: 600;
+  color: #2563eb;
+  min-width: 80px;
+  text-transform: none;
+}
+
+.MuiTab-root.Mui-selected {
+  color: #1d4ed8;
+  background: #e0e7ff;
+  border-radius: 8px 8px 0 0;
+}
+
+.MuiToolbar-root {
+  background: #f5f5f5;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 48px !important;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+
+/* Buttons, Inputs, etc. */
+.MuiButton-root {
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.MuiButton-containedPrimary {
+  background: #2563eb;
+}
+
+.MuiButton-containedPrimary:hover {
+  background: #1d4ed8;
+}
+
+.MuiOutlinedInput-root, .MuiInputBase-root {
+  border-radius: 6px;
+}
+
+.MuiFormControl-root {
+  margin-bottom: 8px;
+}
+
+/* Dialogs, Modals */
+.MuiDialog-paper {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #f4f6fa;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-layout {
+    flex-direction: column;
+  }
+  
+  main {
+    margin-left: 0;
+  }
+  
+  .sidebar-toggle {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 48px;
+  }
+  
+  [contenteditable="true"] {
+    padding: 16px;
+    min-height: 300px;
+  }
+  
+  .MuiDrawer-paper {
+    height: 50vh !important;
+    top: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 0 16px;
+  }
+  
+  .app-title {
+    font-size: 1.2rem;
+    margin-right: 16px;
+  }
+  
+  .MuiToolbar-root {
+    padding: 0 8px;
+    overflow-x: auto;
+  }
+  
+  [contenteditable="true"] {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* Fix for MUI components */
+.MuiBox-root {
+  display: flex;
+}
+
+.MuiDrawer-root {
+  position: fixed;
+}
+
+/* Ensure proper z-index stacking */
+.MuiAppBar-root {
+  z-index: 1200;
+}
+
+.MuiDrawer-root {
+  z-index: 1201;
+}
+
+.MuiDialog-root {
+  z-index: 1300;
+}
+
+/* Accessibility Mode */
+.accessibility-mode, body.accessibility-mode {
+  font-size: 1.2em !important;
+  background: #fff !important;
+  color: #111 !important;
+}
+.accessibility-mode *:focus {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px;
+}
+.accessibility-mode .MuiButton-root {
+  font-size: 1.1em !important;
+  font-weight: 600;
+}
+.accessibility-mode .MuiInputBase-input {
+  font-size: 1.1em !important;
+}
+.accessibility-mode .MuiTypography-root {
+  color: #111 !important;
+}
