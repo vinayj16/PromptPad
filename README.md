@@ -191,16 +191,8 @@ Licensed under the **ISC License**.
 ## 💬 Support
 
 * [GitHub Issues](https://github.com/vinayj16/promptpad/issues)
-* [Email](mailto:your-email@example.com)
+* [Email](mailto: vinays15201718@gmail.com)
 * Or ask your AI assistant inside PromptPad 😉
 
 ---
 
-Would you like a **logo, tagline, or landing page copy** for PromptPad next?
-cd project/frontend
-npm install
-npm run dev
-
-cd ../backend
-npm install
-npm start# PromptPad
