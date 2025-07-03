@@ -240,313 +240,313 @@ const AISidebar: React.FC<AISidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Chat/Content Area (scrollable only for messages) */}
       <div className="flex-1 flex flex-col">
-        {activeTab === 'chat' && (
-          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2" style={{ minHeight: 0 }}>
-            {messages.map((msg) => (
-              <div key={msg.id} className={`mb-2 flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`rounded-lg px-3 py-2 text-sm max-w-[80%] ${msg.type === 'user' ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-800'}`}>
-                  {msg.content}
+        {activeTab === 'chat' ? (
+          <div className="flex flex-col h-full">
+            <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2" style={{ minHeight: 0 }}>
+              {messages.map((msg) => (
+                <div key={msg.id} className={`mb-2 flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`rounded-lg px-3 py-2 text-sm max-w-[80%] ${msg.type === 'user' ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-800'}`}>
+                    {msg.content}
+                  </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+            <div className="bg-white border-t border-gray-200 p-3 flex items-center z-10">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleSendMessage(); }}
+                placeholder="Ask AI anything..."
+                className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim()}
+                className="ml-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        )}
+        ) : (
+          <>
+            {activeTab === 'tools' && (
+              <div className="p-4 space-y-4 overflow-auto">
+                {selectedText && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-xs font-medium text-blue-800 mb-2">Selected Text:</p>
+                    <p className="text-sm text-blue-700 italic">"{selectedText.slice(0, 100)}..."</p>
+                  </div>
+                )}
+                
+                <div className="space-y-4">
+                  <h3 className="font-medium text-gray-900">Text Actions</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleTextAction('summarize')}
+                      disabled={!selectedText}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <FileText className="w-4 h-4 text-blue-600 mb-1" />
+                      <p className="text-xs font-medium">Summarize</p>
+                    </button>
+                    <button
+                      onClick={() => handleTextAction('rewrite')}
+                      disabled={!selectedText}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <RefreshCw className="w-4 h-4 text-green-600 mb-1" />
+                      <p className="text-xs font-medium">Rewrite</p>
+                    </button>
+                    <button
+                      onClick={() => handleTextAction('expand')}
+                      disabled={!selectedText}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <TrendingUp className="w-4 h-4 text-purple-600 mb-1" />
+                      <p className="text-xs font-medium">Expand</p>
+                    </button>
+                    <button
+                      onClick={() => handleTextAction('simplify')}
+                      disabled={!selectedText}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <Target className="w-4 h-4 text-orange-600 mb-1" />
+                      <p className="text-xs font-medium">Simplify</p>
+                    </button>
+                    <button
+                      onClick={() => handleTextAction('formal')}
+                      disabled={!selectedText}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <PenTool className="w-4 h-4 text-indigo-600 mb-1" />
+                      <p className="text-xs font-medium">Make Formal</p>
+                    </button>
+                    <button
+                      onClick={() => handleTextAction('casual')}
+                      disabled={!selectedText}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <Zap className="w-4 h-4 text-yellow-600 mb-1" />
+                      <p className="text-xs font-medium">Make Casual</p>
+                    </button>
+                  </div>
+                </div>
 
-        {activeTab === 'tools' && (
-          <div className="p-4 space-y-4 overflow-auto">
-            {selectedText && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-xs font-medium text-blue-800 mb-2">Selected Text:</p>
-                <p className="text-sm text-blue-700 italic">"{selectedText.slice(0, 100)}..."</p>
+                <div className="space-y-3">
+                  <h3 className="font-medium text-gray-900">Advanced Tools</h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => handleAdvancedAction('translate', { language: 'Spanish' })}
+                      disabled={!selectedText}
+                      className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <Languages className="w-4 h-4 text-blue-600 mb-1" />
+                      <p className="text-sm font-medium">Translate to Spanish</p>
+                      <p className="text-xs text-gray-600">Translate selected text</p>
+                    </button>
+                    <button
+                      onClick={() => handleAdvancedAction('outline', { topic: 'Document Topic' })}
+                      disabled={false}
+                      className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <BookOpen className="w-4 h-4 text-green-600 mb-1" />
+                      <p className="text-sm font-medium">Generate Outline</p>
+                      <p className="text-xs text-gray-600">Create document structure</p>
+                    </button>
+                    <button
+                      onClick={() => handleAdvancedAction('improve', { style: 'academic' })}
+                      disabled={!document.content}
+                      className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <Award className="w-4 h-4 text-purple-600 mb-1" />
+                      <p className="text-sm font-medium">Improve for Academic Style</p>
+                      <p className="text-xs text-gray-600">Enhance writing quality</p>
+                    </button>
+                    <button
+                      onClick={() => handleAdvancedAction('citations', { style: 'APA' })}
+                      disabled={!document.content}
+                      className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <BookOpen className="w-4 h-4 text-indigo-600 mb-1" />
+                      <p className="text-sm font-medium">Generate APA Citations</p>
+                      <p className="text-xs text-gray-600">Create bibliography</p>
+                    </button>
+                    <button
+                      onClick={() => handleAdvancedAction('plagiarism')}
+                      disabled={!document.content}
+                      className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <Search className="w-4 h-4 text-red-600 mb-1" />
+                      <p className="text-sm font-medium">Check Plagiarism</p>
+                      <p className="text-xs text-gray-600">Verify originality</p>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="font-medium text-gray-900">Document Actions</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={handleAnalyzeDocument}
+                      disabled={!document.content}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <TrendingUp className="w-4 h-4 text-blue-600 mb-1" />
+                      <p className="text-xs font-medium">Analyze Writing</p>
+                    </button>
+                    <button
+                      onClick={handleGrammarCheck}
+                      disabled={!document.content}
+                      className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      <CheckCircle className="w-4 h-4 text-green-600 mb-1" />
+                      <p className="text-xs font-medium">Grammar Check</p>
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
-            
-            <div className="space-y-4">
-              <h3 className="font-medium text-gray-900">Text Actions</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => handleTextAction('summarize')}
-                  disabled={!selectedText}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <FileText className="w-4 h-4 text-blue-600 mb-1" />
-                  <p className="text-xs font-medium">Summarize</p>
-                </button>
-                <button
-                  onClick={() => handleTextAction('rewrite')}
-                  disabled={!selectedText}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <RefreshCw className="w-4 h-4 text-green-600 mb-1" />
-                  <p className="text-xs font-medium">Rewrite</p>
-                </button>
-                <button
-                  onClick={() => handleTextAction('expand')}
-                  disabled={!selectedText}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <TrendingUp className="w-4 h-4 text-purple-600 mb-1" />
-                  <p className="text-xs font-medium">Expand</p>
-                </button>
-                <button
-                  onClick={() => handleTextAction('simplify')}
-                  disabled={!selectedText}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <Target className="w-4 h-4 text-orange-600 mb-1" />
-                  <p className="text-xs font-medium">Simplify</p>
-                </button>
-                <button
-                  onClick={() => handleTextAction('formal')}
-                  disabled={!selectedText}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <PenTool className="w-4 h-4 text-indigo-600 mb-1" />
-                  <p className="text-xs font-medium">Make Formal</p>
-                </button>
-                <button
-                  onClick={() => handleTextAction('casual')}
-                  disabled={!selectedText}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <Zap className="w-4 h-4 text-yellow-600 mb-1" />
-                  <p className="text-xs font-medium">Make Casual</p>
-                </button>
-              </div>
-            </div>
 
-            <div className="space-y-3">
-              <h3 className="font-medium text-gray-900">Advanced Tools</h3>
-              <div className="space-y-2">
-                <button
-                  onClick={() => handleAdvancedAction('translate', { language: 'Spanish' })}
-                  disabled={!selectedText}
-                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <Languages className="w-4 h-4 text-blue-600 mb-1" />
-                  <p className="text-sm font-medium">Translate to Spanish</p>
-                  <p className="text-xs text-gray-600">Translate selected text</p>
-                </button>
-                <button
-                  onClick={() => handleAdvancedAction('outline', { topic: 'Document Topic' })}
-                  disabled={false}
-                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <BookOpen className="w-4 h-4 text-green-600 mb-1" />
-                  <p className="text-sm font-medium">Generate Outline</p>
-                  <p className="text-xs text-gray-600">Create document structure</p>
-                </button>
-                <button
-                  onClick={() => handleAdvancedAction('improve', { style: 'academic' })}
-                  disabled={!document.content}
-                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <Award className="w-4 h-4 text-purple-600 mb-1" />
-                  <p className="text-sm font-medium">Improve for Academic Style</p>
-                  <p className="text-xs text-gray-600">Enhance writing quality</p>
-                </button>
-                <button
-                  onClick={() => handleAdvancedAction('citations', { style: 'APA' })}
-                  disabled={!document.content}
-                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <BookOpen className="w-4 h-4 text-indigo-600 mb-1" />
-                  <p className="text-sm font-medium">Generate APA Citations</p>
-                  <p className="text-xs text-gray-600">Create bibliography</p>
-                </button>
-                <button
-                  onClick={() => handleAdvancedAction('plagiarism')}
-                  disabled={!document.content}
-                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <Search className="w-4 h-4 text-red-600 mb-1" />
-                  <p className="text-sm font-medium">Check Plagiarism</p>
-                  <p className="text-xs text-gray-600">Verify originality</p>
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="font-medium text-gray-900">Document Actions</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={handleAnalyzeDocument}
-                  disabled={!document.content}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <TrendingUp className="w-4 h-4 text-blue-600 mb-1" />
-                  <p className="text-xs font-medium">Analyze Writing</p>
-                </button>
-                <button
-                  onClick={handleGrammarCheck}
-                  disabled={!document.content}
-                  className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  <CheckCircle className="w-4 h-4 text-green-600 mb-1" />
-                  <p className="text-xs font-medium">Grammar Check</p>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'insights' && (
-          <div className="p-4 space-y-4 overflow-auto">
-            {analysis ? (
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-2">Readability Score</h3>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${analysis.readabilityScore}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-medium">{analysis.readabilityScore}/100</span>
-                  </div>
-                  <p className="text-xs text-gray-600 mt-1">Grade Level: {analysis.gradeLevel}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-purple-50 rounded-lg p-3">
-                    <p className="text-xs text-purple-600 font-medium">Tone</p>
-                    <p className="text-sm font-semibold text-purple-900">{analysis.tone}</p>
-                  </div>
-                  <div className="bg-orange-50 rounded-lg p-3">
-                    <p className="text-xs text-orange-600 font-medium">Sentiment</p>
-                    <p className="text-sm font-semibold text-orange-900">{analysis.sentiment}</p>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 font-medium">Word Complexity</p>
-                    <p className="text-sm font-semibold text-blue-900">{analysis.wordComplexity}%</p>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <p className="text-xs text-green-600 font-medium">Sentence Variety</p>
-                    <p className="text-sm font-semibold text-green-900">{analysis.sentenceVariety}%</p>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-2 flex items-center">
-                    <CheckCircle className="w-4 h-4 text-green-600 mr-1" />
-                    Strengths
-                  </h3>
-                  <ul className="space-y-1">
-                    {analysis.strengths.map((strength: string, index: number) => (
-                      <li key={index} className="text-sm text-gray-700">• {strength}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-yellow-50 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-2 flex items-center">
-                    <Lightbulb className="w-4 h-4 text-yellow-600 mr-1" />
-                    Suggestions for Improvement
-                  </h3>
-                  <ul className="space-y-1">
-                    {analysis.suggestions.map((suggestion: string, index: number) => (
-                      <li key={index} className="text-sm text-gray-700">• {suggestion}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-orange-50 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-2 flex items-center">
-                    <Target className="w-4 h-4 text-orange-600 mr-1" />
-                    Areas to Improve
-                  </h3>
-                  <ul className="space-y-1">
-                    {analysis.improvements.map((improvement: string, index: number) => (
-                      <li key={index} className="text-sm text-gray-700">• {improvement}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-gray-500 mt-8">
-                <TrendingUp className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                <p className="text-sm">No analysis available</p>
-                <p className="text-xs text-gray-400 mt-1">Use the Tools tab to analyze your document</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'grammar' && (
-          <div className="p-4 space-y-4 overflow-auto">
-            {grammarCheck ? (
-              <div className="space-y-4">
-                <div className="bg-green-50 rounded-lg p-4">
-                  <h3 className="font-medium text-gray-900 mb-2 flex items-center">
-                    <CheckCircle className="w-4 h-4 text-green-600 mr-1" />
-                    Grammar Check Results
-                  </h3>
-                  <p className="text-sm text-gray-700">
-                    Found {grammarCheck.issues.length} potential issues
-                  </p>
-                </div>
-
-                {grammarCheck.issues.length > 0 ? (
-                  <div className="space-y-3">
-                    {grammarCheck.issues.map((issue: any, index: number) => (
-                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-3">
-                        <div className="flex items-start space-x-2">
-                          <div className={`w-2 h-2 rounded-full mt-2 ${
-                            issue.type === 'grammar' ? 'bg-red-500' :
-                            issue.type === 'spelling' ? 'bg-orange-500' : 'bg-blue-500'
-                          }`}></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900 capitalize">
-                              {issue.type} Issue
-                            </p>
-                            <p className="text-sm text-gray-700">{issue.message}</p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              Position: {issue.position}
-                            </p>
-                          </div>
+            {activeTab === 'insights' && (
+              <div className="p-4 space-y-4 overflow-auto">
+                {analysis ? (
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
+                      <h3 className="font-medium text-gray-900 mb-2">Readability Score</h3>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${analysis.readabilityScore}%` }}
+                          ></div>
                         </div>
+                        <span className="text-sm font-medium">{analysis.readabilityScore}/100</span>
                       </div>
-                    ))}
+                      <p className="text-xs text-gray-600 mt-1">Grade Level: {analysis.gradeLevel}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-purple-50 rounded-lg p-3">
+                        <p className="text-xs text-purple-600 font-medium">Tone</p>
+                        <p className="text-sm font-semibold text-purple-900">{analysis.tone}</p>
+                      </div>
+                      <div className="bg-orange-50 rounded-lg p-3">
+                        <p className="text-xs text-orange-600 font-medium">Sentiment</p>
+                        <p className="text-sm font-semibold text-orange-900">{analysis.sentiment}</p>
+                      </div>
+                      <div className="bg-blue-50 rounded-lg p-3">
+                        <p className="text-xs text-blue-600 font-medium">Word Complexity</p>
+                        <p className="text-sm font-semibold text-blue-900">{analysis.wordComplexity}%</p>
+                      </div>
+                      <div className="bg-green-50 rounded-lg p-3">
+                        <p className="text-xs text-green-600 font-medium">Sentence Variety</p>
+                        <p className="text-sm font-semibold text-green-900">{analysis.sentenceVariety}%</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-medium text-gray-900 mb-2 flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-1" />
+                        Strengths
+                      </h3>
+                      <ul className="space-y-1">
+                        {analysis.strengths.map((strength: string, index: number) => (
+                          <li key={index} className="text-sm text-gray-700">• {strength}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-yellow-50 rounded-lg p-4">
+                      <h3 className="font-medium text-gray-900 mb-2 flex items-center">
+                        <Lightbulb className="w-4 h-4 text-yellow-600 mr-1" />
+                        Suggestions for Improvement
+                      </h3>
+                      <ul className="space-y-1">
+                        {analysis.suggestions.map((suggestion: string, index: number) => (
+                          <li key={index} className="text-sm text-gray-700">• {suggestion}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-orange-50 rounded-lg p-4">
+                      <h3 className="font-medium text-gray-900 mb-2 flex items-center">
+                        <Target className="w-4 h-4 text-orange-600 mr-1" />
+                        Areas to Improve
+                      </h3>
+                      <ul className="space-y-1">
+                        {analysis.improvements.map((improvement: string, index: number) => (
+                          <li key={index} className="text-sm text-gray-700">• {improvement}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center text-gray-500 mt-8">
-                    <CheckCircle className="w-12 h-12 mx-auto text-green-500 mb-3" />
-                    <p className="text-sm">No grammar issues found!</p>
-                    <p className="text-xs text-gray-400 mt-1">Your document looks great</p>
+                    <TrendingUp className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                    <p className="text-sm">No analysis available</p>
+                    <p className="text-xs text-gray-400 mt-1">Use the Tools tab to analyze your document</p>
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="text-center text-gray-500 mt-8">
-                <CheckCircle className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                <p className="text-sm">No grammar check available</p>
-                <p className="text-xs text-gray-400 mt-1">Use the Tools tab to check grammar</p>
+            )}
+
+            {activeTab === 'grammar' && (
+              <div className="p-4 space-y-4 overflow-auto">
+                {grammarCheck ? (
+                  <div className="space-y-4">
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h3 className="font-medium text-gray-900 mb-2 flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-1" />
+                        Grammar Check Results
+                      </h3>
+                      <p className="text-sm text-gray-700">
+                        Found {grammarCheck.issues.length} potential issues
+                      </p>
+                    </div>
+
+                    {grammarCheck.issues.length > 0 ? (
+                      <div className="space-y-3">
+                        {grammarCheck.issues.map((issue: any, index: number) => (
+                          <div key={index} className="bg-white border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-start space-x-2">
+                              <div className={`w-2 h-2 rounded-full mt-2 ${
+                                issue.type === 'grammar' ? 'bg-red-500' :
+                                issue.type === 'spelling' ? 'bg-orange-500' : 'bg-blue-500'
+                              }`}></div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900 capitalize">
+                                  {issue.type} Issue
+                                </p>
+                                <p className="text-sm text-gray-700">{issue.message}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Position: {issue.position}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-500 mt-8">
+                        <CheckCircle className="w-12 h-12 mx-auto text-green-500 mb-3" />
+                        <p className="text-sm">No grammar issues found!</p>
+                        <p className="text-xs text-gray-400 mt-1">Your document looks great</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500 mt-8">
+                    <CheckCircle className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                    <p className="text-sm">No grammar check available</p>
+                    <p className="text-xs text-gray-400 mt-1">Use the Tools tab to check grammar</p>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
-
-        {/* Fixed Chat Input at Bottom */}
-        {activeTab === 'chat' && (
-          <div className="bg-white border-t border-gray-200 p-3 flex items-center z-10">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') handleSendMessage(); }}
-              placeholder="Ask AI anything..."
-              className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim()}
-              className="ml-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
+          </>
         )}
       </div>
     </div>
