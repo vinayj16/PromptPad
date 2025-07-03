@@ -31,23 +31,17 @@ app.post('/grammar', async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).json({ error: 'No text provided' });
   try {
-    // Call OpenAI GPT-4 for grammar suggestions
-    const prompt = `You are a grammar and spelling assistant. For the following text, find all grammar and spelling mistakes. For each mistake, return the offset (start index), length, suggested correction, and a short explanation. Respond in JSON array format: [{"offset":..., "length":..., "suggestion":..., "explanation":...}].\n\nText: """${text}"""`;
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 512,
-        temperature: 0.2,
-      }),
-    });
-    const data = await response.json();
-    const suggestions = JSON.parse(data.choices[0].message.content);
+    // Use Gemini for grammar suggestions
+    const prompt = `You are a grammar and spelling assistant. For the following text, find all grammar and spelling mistakes. For each mistake, return the offset (start index), length, suggested correction, and a short explanation. Respond in JSON array format: [{"offset":..., "length":..., "suggestion":..., "explanation":...}].\n\nText: \"\"\"${text}\"\"\"`;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    const generatedText = result.response?.candidates[0]?.content?.parts[0]?.text || "[]";
+    let suggestions = [];
+    try {
+      suggestions = JSON.parse(generatedText);
+    } catch {
+      suggestions = [];
+    }
     res.json({ suggestions });
   } catch (error) {
     console.error('Error in grammar check:', error);
