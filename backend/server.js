@@ -182,6 +182,14 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
+// Serve static files from the frontend build
+app.use(express.static(join(__dirname, '../frontend/dist')));
+
+// For any other route, serve index.html (for React Router)
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '../frontend/dist/index.html'));
+});
+
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
