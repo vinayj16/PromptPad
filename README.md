@@ -1,205 +1,198 @@
-# MS Word Clone - AI-Powered Word Processor
+# **PromptPad – AI-Powered Word Processor**
 
-A modern, AI-powered word processor built with React and Node.js, featuring a Microsoft Word-like interface with advanced AI capabilities.
+A modern, intelligent word processor built with React and Node.js. Inspired by MS Word, **PromptPad** integrates advanced **AI writing assistance** (Gemini + OpenAI) for real-time content generation, rewriting, summarization, and more — all within a beautiful, intuitive interface.
 
-## Features
+---
 
-- **Modern Ribbon UI**: Microsoft Word-style interface with tabs and toolbars
-- **AI-Powered Writing**: Integration with Google Gemini and OpenAI for content generation
-- **Real-time Collaboration**: Multi-user editing with live synchronization
-- **Advanced Formatting**: Rich text editing with comprehensive formatting options
-- **Document Management**: Save, load, and organize documents
-- **Export Options**: Support for multiple file formats
-- **Auto-save**: Automatic document saving with version history
-- **Writing Analytics**: Word count, character count, and writing statistics
-- **Templates**: Pre-built document templates for various use cases
+## ✨ Features
 
-## Tech Stack
+* 🧠 **AI-Powered Writing Tools**: Summarize, rewrite, expand, simplify, and analyze your writing using Gemini & OpenAI
+* 📝 **Modern Ribbon UI**: Microsoft Word-style editor with formatting, toolbar, and section-based layout
+* 🧑‍🤝‍🧑 **Real-time Collaboration**: Multi-user editing with live sync *(planned feature)*
+* 💾 **Document Management**: Create, save, load, auto-save, and manage versions
+* 📤 **Export Options**: Download documents in various formats (PDF, DOCX, etc.)
+* 📊 **Writing Analytics**: Word/char count, estimated read time, style metrics
+* 🧰 **Templates**: Ready-made templates for blogs, resumes, letters, etc.
+* 💡 **AI Sidebar**: Ask ChatGPT-style questions within your document (e.g., "Suggest a better intro")
+
+---
+
+## ⚙️ Tech Stack
 
 ### Frontend
-- React 18
-- Material-UI 6
-- Lucide React (Icons)
-- Draft.js (Rich text editing)
-- React Quill (Alternative editor)
+
+* **React 18**
+* **Material UI 6**
+* **Lucide React** (for icons)
+* **Draft.js** / **React Quill** for rich text editing
+* **Tailwind CSS** *(optional styling layer)*
 
 ### Backend
-- Node.js
-- Express.js
-- Google Generative AI (Gemini)
-- OpenAI API
-- MongoDB (optional)
 
-## Quick Start
+* **Node.js + Express**
+* **OpenAI API**
+* **Google Gemini API**
+* **MongoDB** *(for document persistence)*
 
-### Prerequisites
-- Node.js 16+ 
-- npm or yarn
+---
 
-### Installation
+## 🚀 Quick Start
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd msword
-   ```
+### ✅ Prerequisites
 
-2. **Install all dependencies**
-   ```bash
-   npm run install:all
-   ```
+* Node.js v16+
+* npm or yarn
 
-3. **Set up environment variables**
-   
-   Create a `.env` file in the `backend` directory:
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
-   OPENAI_API_KEY=your_openai_api_key_here
-   PORT=3000
-   NODE_ENV=development
-   ```
-
-4. **Start the application**
-   ```bash
-   npm start
-   ```
-
-   This will start both the frontend (port 3001) and backend (port 3000) concurrently.
-
-### Alternative: Run Frontend Only
-
-If you want to run just the frontend without AI features:
+### 📦 Installation
 
 ```bash
-cd frontend
+# 1. Clone the repo
+git clone <repository-url>
+cd promptpad
+
+# 2. Install all dependencies (frontend + backend)
+npm run install:all
+
+# 3. Set up environment variables
+```
+
+Create a `.env` file in the `/backend` directory:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+PORT=3000
+NODE_ENV=development
+```
+
+### ▶️ Run the app
+
+```bash
 npm start
 ```
 
-### Alternative: Run Backend Only
+> This starts both the **frontend** on `localhost:3001` and **backend** on `localhost:3000`.
+
+---
+
+## 🧪 Run Individually
 
 ```bash
+# Frontend only
+cd frontend
+npm start
+
+# Backend only
 cd backend
 npm start
 ```
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
-msword/
-├── frontend/                 # React frontend application
+promptpad/
+├── frontend/
 │   ├── src/
-│   │   ├── components/      # React components
-│   │   │   ├── Editor/      # Main editor components
-│   │   │   ├── Toolbar/     # Ribbon UI components
-│   │   │   ├── Sidebar/     # Sidebar components
-│   │   │   └── Dialogs/     # Modal dialogs
-│   │   ├── context/         # React context providers
-│   │   └── hooks/           # Custom React hooks
-│   └── public/              # Static assets
-├── backend/                  # Node.js backend server
-│   ├── server.js            # Main server file
-│   └── package.json         # Backend dependencies
-└── package.json             # Root package.json with scripts
+│   │   ├── components/
+│   │   │   ├── Editor/        # Editor interface
+│   │   │   ├── Toolbar/       # MS Word-style ribbon
+│   │   │   ├── Sidebar/       # AI assistant sidebar
+│   │   │   └── Dialogs/       # Popups (export, templates, etc.)
+│   │   ├── context/           # React Context API
+│   │   └── hooks/             # Custom hooks
+│   └── public/                # Static assets
+├── backend/
+│   ├── server.js              # Main Express server
+│   └── routes/ai.js           # AI endpoints
+└── package.json               # Root scripts and tooling
 ```
 
-## API Endpoints
+---
 
-### AI Features
-- `POST /ai/summarize` - Summarize text
-- `POST /ai/rewrite` - Rewrite text
-- `POST /ai/expand` - Expand text
-- `POST /ai/simplify` - Simplify text
-- `POST /ai/analyze` - Analyze writing quality
-- `POST /ai/style-transfer` - Change writing style
+## 📡 API Endpoints
 
-### Document Management
-- `POST /save` - Save document
-- `POST /load` - Load document
-- `POST /export` - Export document
-- `POST /cloud-save` - Save to cloud storage
+### ✨ AI Writing
 
-## Configuration
+| Endpoint                  | Purpose                            |
+| ------------------------- | ---------------------------------- |
+| `POST /ai/summarize`      | Summarize selected content         |
+| `POST /ai/rewrite`        | Rephrase selected text             |
+| `POST /ai/expand`         | Expand brief text into a paragraph |
+| `POST /ai/simplify`       | Make content easier to understand  |
+| `POST /ai/analyze`        | Writing quality analysis           |
+| `POST /ai/style-transfer` | Change tone/style of text          |
 
-### Environment Variables
+### 📄 Document Management
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GEMINI_API_KEY` | Google Gemini API key | Yes (for AI features) |
-| `OPENAI_API_KEY` | OpenAI API key | No (for grammar checking) |
-| `PORT` | Backend server port | No (default: 3000) |
-| `NODE_ENV` | Environment mode | No (default: development) |
+| Endpoint           | Purpose                            |
+| ------------------ | ---------------------------------- |
+| `POST /save`       | Save document                      |
+| `POST /load`       | Load saved doc                     |
+| `POST /export`     | Export as PDF/DOCX                 |
+| `POST /cloud-save` | Save to cloud storage *(optional)* |
 
-### Getting API Keys
+---
 
-1. **Google Gemini API Key**:
-   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create a new API key
-   - Add it to your `.env` file
+## 🔧 Configuration
 
-2. **OpenAI API Key** (optional):
-   - Visit [OpenAI Platform](https://platform.openai.com/api-keys)
-   - Create a new API key
-   - Add it to your `.env` file
+### 🌐 Environment Variables
 
-## Development
+| Variable         | Description          | Required             |
+| ---------------- | -------------------- | -------------------- |
+| `GEMINI_API_KEY` | Google Gemini AI key | ✅                    |
+| `OPENAI_API_KEY` | OpenAI API key       | 🔁 Optional          |
+| `PORT`           | Backend server port  | Default: 3000        |
+| `NODE_ENV`       | Environment          | Default: development |
 
-### Available Scripts
+---
 
-- `npm start` - Start both frontend and backend
-- `npm run start:frontend` - Start only frontend
-- `npm run start:backend` - Start only backend
-- `npm run build` - Build frontend for production
-- `npm test` - Run frontend tests
-- `npm run install:all` - Install all dependencies
+## 🛠 Development
 
-### Code Style
+### NPM Scripts
 
-The project uses:
-- ESLint for JavaScript linting
-- Prettier for code formatting
-- Material-UI for consistent styling
+| Script                   | Description                             |
+| ------------------------ | --------------------------------------- |
+| `npm start`              | Run frontend & backend together         |
+| `npm run start:frontend` | Start frontend only                     |
+| `npm run start:backend`  | Start backend only                      |
+| `npm run build`          | Build production frontend               |
+| `npm test`               | Run unit tests                          |
+| `npm run install:all`    | Install frontend & backend dependencies |
 
-## Troubleshooting
+---
 
-### Common Issues
+## 📌 Tips & Troubleshooting
 
-1. **Port already in use**:
-   - Change the port in the `.env` file
-   - Or kill the process using the port
+* **Port in use**? → Change `PORT` in `.env`
+* **Missing API keys**? → Check `.env` and ensure backend can read it
+* **CORS errors**? → Make sure frontend and backend are using the correct origins
+* **Performance**? → Use production build for deployment
 
-2. **API key errors**:
-   - Ensure your API keys are valid
-   - Check that the `.env` file is in the correct location
+---
 
-3. **Missing dependencies**:
-   - Run `npm run install:all` to install all dependencies
+## 🤝 Contributing
 
-4. **CORS errors**:
-   - Ensure the backend is running on the correct port
-   - Check that the frontend is making requests to the correct backend URL
-
-### Performance Tips
-
-- Use the latest version of Node.js
-- Enable hardware acceleration in your browser
-- Close unnecessary browser tabs
-- Consider using a development build for better performance
-
-## Contributing
-
-1. Fork the repository
+1. Fork the repo
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+4. Write/update tests if applicable
+5. Open a PR!
 
-## License
+---
 
-This project is licensed under the ISC License.
+## 📜 License
 
-## Support
+Licensed under the **ISC License**.
 
-For support and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section above
-- Review the code comments for implementation details # word
+---
+
+## 💬 Support
+
+* [GitHub Issues](https://github.com/vinayj16/promptpad/issues)
+* [Email](mailto: vinays15201718@gmail.com)
+* Or ask your AI assistant inside PromptPad 😉
+
+---
+
