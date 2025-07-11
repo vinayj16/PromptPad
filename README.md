@@ -196,3 +196,79 @@ Licensed under the **ISC License**.
 
 ---
 
+# 🚀 Deployment & Production Checklist
+
+## 1. **Set Required Environment Variables on Render**
+
+Go to your Render service → **Environment** tab → Add these variables:
+
+| Key              | Value (example)                                                                                   | Required? |
+|------------------|--------------------------------------------------------------------------------------------------|-----------|
+| `MONGODB_URI`    | `mongodb+srv://<user>:<pass>@cluster0.mongodb.net/promptpad?retryWrites=true&w=majority`         | Yes       |
+| `GEMINI_API_KEY` | `your-gemini-api-key`                                                                            | Yes       |
+| `GEMINI_MODEL`   | `gemini-pro` (or your preferred Gemini model)                                                    | Yes       |
+| `JWT_SECRET`     | `your-very-secret-jwt-key`                                                                       | Yes       |
+| `FRONTEND_URL`   | `https://promptpad.onrender.com` (or your custom domain, if CORS issues)                         | Optional  |
+| `NODE_ENV`       | `production`                                                                                     | Optional  |
+
+**Note:**  
+- Double-check for typos (e.g., `MONGODB_URI` not `MONGODB_URl`).
+- Never commit secrets to git.
+
+---
+
+## 2. **Deploy with the Latest Code**
+
+- Push your latest code to GitHub.
+- Trigger a manual deploy on Render (or wait for auto-deploy).
+
+---
+
+## 3. **Test All Major Flows in Production**
+
+### **Authentication**
+- Register a new user.
+- Login and logout.
+- Try invalid login (wrong password/email) and check for friendly error.
+
+### **Document Management**
+- Create a new document.
+- Edit and save changes.
+- Delete a document.
+- Check that changes persist after refresh.
+
+### **Real-Time Collaboration**
+- Open the same document in two browser windows (or with two users).
+- Edit content in one window and see updates in the other.
+- Add comments and resolve them.
+
+### **AI Features**
+- Use AI features: Summarize, rewrite, grammar check, generate content, etc.
+- Check for correct AI responses and error handling (e.g., if you hit a rate limit).
+
+### **Error Handling**
+- Try to access a document you don’t own (should get “Access denied”).
+- Exceed AI rate limits (should get a clear error).
+- Disconnect internet and try actions (should show network error).
+
+---
+
+## 4. **Check Logs for Backend Errors**
+
+- In Render, go to your service → **Logs** tab.
+- Look for errors or warnings during your tests.
+- Fix any issues and redeploy if needed.
+
+---
+
+## 5. **(Optional) Add a README Section**
+
+```markdown
+<code_block_to_apply_changes_from>
+```
+
+---
+
+**If you want a more detailed README or a deployment script, let me know!**  
+If you hit any issues during testing, paste the error/log here and I’ll help you debug it.
+

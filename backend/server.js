@@ -31,6 +31,13 @@ const __dirname = dirname(__filename);
 
 dotenv.config();
 
+const requiredEnv = ['MONGODB_URI', 'GEMINI_API_KEY'];
+const missing = requiredEnv.filter((key) => !process.env[key]);
+if (missing.length) {
+  logger.error(`Missing required environment variables: ${missing.join(', ')}`);
+  process.exit(1);
+}
+
 // Logger setup
 const logger = winston.createLogger({
   level: 'info',
@@ -175,9 +182,6 @@ app.get('/health', (req, res) => {
 // Setup Socket.IO for real-time collaboration
 setupCollaborationSocket(io, logger);
 
-// Error handling middleware
-app.use(errorHandler);
-
 // Serve static files from the frontend build
 app.use(express.static(join(__dirname, '../frontend/dist')));
 
@@ -186,10 +190,8 @@ app.get('*', (req, res) => {
   res.sendFile(join(__dirname, '../frontend/dist/index.html'));
 });
 
-// 404 handler (should be last)
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
+// Error handling middleware (for API errors)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

@@ -15,7 +15,8 @@ interface AIContextType {
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
 
-const API_BASE = 'http://localhost:5000';
+// Use the Vite global type for import.meta.env
+const API_BASE = (import.meta as ImportMeta & { env: { VITE_API_URL?: string } }).env.VITE_API_URL || '';
 
 export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,10 +24,10 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const processText = useCallback(async (text: string, action: string): Promise<string> => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/ai/${action}`, {
+      const res = await fetch(`${API_BASE}/api/ai/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, aiPersona: 'AI Assistant', writingGoal: 'general', targetAudience: 'general' }),
+        body: JSON.stringify({ text, action }),
       });
       const data = await res.json();
       setIsProcessing(false);
@@ -41,7 +42,7 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const generateContent = useCallback(async (prompt: string): Promise<string> => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/generate`, {
+      const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
@@ -49,7 +50,7 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       const data = await res.json();
       setIsProcessing(false);
       if (data.error) throw new Error(data.error);
-      return data.text;
+      return data.content || data.text;
     } catch (err) {
       setIsProcessing(false);
       throw err;
@@ -59,15 +60,15 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const analyzeWriting = useCallback(async (text: string) => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/analyze`, {
+      const res = await fetch(`${API_BASE}/api/ai/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, writingGoal: 'general', aiPersona: 'AI Assistant', writingStyle: 'general', targetAudience: 'general', documentType: 'document' }),
+        body: JSON.stringify({ text }),
       });
       const data = await res.json();
       setIsProcessing(false);
       if (data.error) throw new Error(data.error);
-      return data;
+      return data.analysis || data;
     } catch (err) {
       setIsProcessing(false);
       throw err;
@@ -77,7 +78,7 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const checkGrammar = useCallback(async (text: string) => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/grammar`, {
+      const res = await fetch(`${API_BASE}/api/ai/grammar-check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
@@ -85,7 +86,7 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       const data = await res.json();
       setIsProcessing(false);
       if (data.error) throw new Error(data.error);
-      return { issues: data.suggestions || [], correctedText: text };
+      return { issues: data.issues || [], correctedText: text };
     } catch (err) {
       setIsProcessing(false);
       throw err;
@@ -95,16 +96,15 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const translateText = useCallback(async (text: string, targetLanguage: string): Promise<string> => {
     setIsProcessing(true);
     try {
-      const prompt = `Translate this text to ${targetLanguage}: ${text}`;
-      const res = await fetch(`${API_BASE}/generate`, {
+      const res = await fetch(`${API_BASE}/api/ai/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ text, action: 'translate', context: { language: targetLanguage } }),
       });
       const data = await res.json();
       setIsProcessing(false);
       if (data.error) throw new Error(data.error);
-      return data.text;
+      return data.result || data.text;
     } catch (err) {
       setIsProcessing(false);
       throw err;
@@ -114,15 +114,15 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const generateOutline = useCallback(async (topic: string): Promise<string> => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/generate-toc`, {
+      const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: topic, writingGoal: 'general', documentType: 'document', aiPersona: 'AI Assistant' }),
+        body: JSON.stringify({ prompt: topic, type: 'outline' }),
       });
       const data = await res.json();
       setIsProcessing(false);
       if (data.error) throw new Error(data.error);
-      return JSON.stringify(data.toc, null, 2);
+      return data.content || JSON.stringify(data);
     } catch (err) {
       setIsProcessing(false);
       throw err;
@@ -132,10 +132,10 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const improveWriting = useCallback(async (text: string, style: string): Promise<string> => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/ai/improve`, {
+      const res = await fetch(`${API_BASE}/api/ai/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, aiPersona: 'AI Assistant', writingGoal: style, targetAudience: 'general' }),
+        body: JSON.stringify({ text, action: 'improve', context: { tone: style } }),
       });
       const data = await res.json();
       setIsProcessing(false);
@@ -150,15 +150,8 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const generateCitations = useCallback(async (text: string, style: string): Promise<string> => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/generate-citations`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, writingGoal: style, documentType: 'document' }),
-      });
-      const data = await res.json();
-      setIsProcessing(false);
-      if (data.error) throw new Error(data.error);
-      return JSON.stringify(data.citations, null, 2);
+      // Not implemented in backend, placeholder
+      return 'Citation generation coming soon.';
     } catch (err) {
       setIsProcessing(false);
       throw err;
@@ -168,7 +161,7 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const checkPlagiarism = useCallback(async (text: string) => {
     setIsProcessing(true);
     try {
-      const res = await fetch(`${API_BASE}/plagiarism-check`, {
+      const res = await fetch(`${API_BASE}/api/ai/plagiarism-check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
