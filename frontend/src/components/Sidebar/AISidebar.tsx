@@ -317,7 +317,14 @@ const AISidebar: React.FC<AISidebarProps> = ({ isOpen, onClose, injectedMessages
             <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2" style={{ minHeight: 0 }}>
               {messages.map((msg) => (
                 <div key={msg.id} className={`mb-2 flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`rounded-lg px-3 py-2 text-sm max-w-[80%] ${msg.type === 'user' ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-800'}`}>
+                  <div
+                    className={`rounded-lg px-3 py-2 text-sm max-w-[80%] break-words
+                      ${msg.type === 'user'
+                        ? 'bg-blue-100 text-gray-900 dark:bg-blue-900 dark:text-gray-100'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}
+                      ${msg.type === 'ai' && msg.content && (msg.content.toLowerCase().includes('error') || msg.content.toLowerCase().includes('network')) ? 'border border-red-400 text-red-700 dark:text-red-300' : ''}
+                    `}
+                  >
                     {msg.content}
                   </div>
                 </div>

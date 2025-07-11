@@ -25,13 +25,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onSuccess }) 
     formState: { errors },
   } = useForm<LoginFormData>();
 
+  const [localError, setLocalError] = useState<string | null>(null);
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
+      setLocalError(null);
       await login({ email: data.email, password: data.password });
-      onSuccess();
-    } catch (error) {
-      // Error is handled by the store
+      onSuccess(); // Only close modal on success
+    } catch (error: any) {
+      // Error is handled by the store, but also set local error for extra safety
+      setLocalError(error?.response?.data?.error || 'Login failed');
     }
   };
 
@@ -51,13 +55,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onSuccess }) 
           <p className="text-gray-600 dark:text-gray-400 mt-2">Sign in to your PromptPad account</p>
         </div>
 
-        {error && (
+        {(error || localError) && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6"
           >
-            <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+            <p className="text-red-600 dark:text-red-400 text-sm">{error || localError}</p>
           </motion.div>
         )}
 

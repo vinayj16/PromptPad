@@ -5,6 +5,7 @@ import { Ruler, Grid, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRigh
 import { useNotification } from '../../App';
 import { useAI } from '../../context/AIContext';
 import { useCollaboration } from '../../context/CollaborationContext';
+import { useAuthStore } from '../../stores/authStore';
 
 function splitContentIntoPages(html: string, pageHeightPx: number, pageMargins: number): string[] {
   // Create a temporary container to measure content
@@ -73,7 +74,7 @@ function splitContentIntoPages(html: string, pageHeightPx: number, pageMargins: 
   return pages;
 }
 
-const Editor: React.FC = () => {
+const Editor: React.FC<{ onShowLogin?: () => void; loginModalOpen?: boolean }> = ({ onShowLogin, loginModalOpen }) => {
   const { document, updateContent, updateTitle, saveDocument } = useDocument();
   const { ui } = useUI();
   const { notify } = useNotification();
@@ -97,6 +98,7 @@ const Editor: React.FC = () => {
   const [commentPosition, setCommentPosition] = useState<number | null>(null);
   const myUserId = users[0]?.id;
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const { isAuthenticated } = useAuthStore();
 
     useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== document.content) {
@@ -832,6 +834,15 @@ const Editor: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col bg-gray-100 relative" role="main" aria-label="Document editor main area">
+      {/* Overlay if not authenticated and login modal is not open */}
+      {!isAuthenticated && !loginModalOpen && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full flex flex-col items-center">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">Please log in to edit documents</h2>
+            <button className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium" onClick={onShowLogin}>Login</button>
+          </div>
+        </div>
+      )}
       {/* Main Editor Container (scrollable paper) */}
       <div className={`flex-1 overflow-auto ${ui.showNavigationPane ? 'ml-64' : ''}`} style={{ maxHeight: 'calc(100vh - 96px)', marginTop: '48px', marginBottom: '48px' }}>
         <div className="max-w-4xl mx-auto px-6 pb-8 flex flex-col items-center">
@@ -873,21 +884,21 @@ const Editor: React.FC = () => {
                   maxHeight: `${PAGE_HEIGHT_PX - (PAGE_MARGINS * 2) - 32}px`,
                   overflow: 'auto',
                 }}
-                contentEditable={idx === 0}
+                contentEditable={isAuthenticated && idx === 0}
                 suppressContentEditableWarning
                 spellCheck={true}
                 aria-label="Document content editor"
                 tabIndex={0}
-                autoFocus={idx === 0}
-                onInput={idx === 0 ? handleContentChange : undefined}
-                onBlur={idx === 0 ? handleContentChange : undefined}
-                onKeyDown={idx === 0 ? handleKeyDown : undefined}
-                onKeyUp={idx === 0 ? handleSelectionChange : undefined}
-                onDragOver={idx === 0 ? handleDragOver : undefined}
-                onDragLeave={idx === 0 ? handleDragLeave : undefined}
-                onDrop={idx === 0 ? handleDrop : undefined}
-                onCopy={idx === 0 ? handleCopy : undefined}
-                onPaste={idx === 0 ? handlePaste : undefined}
+                autoFocus={isAuthenticated && idx === 0}
+                onInput={isAuthenticated && idx === 0 ? handleContentChange : undefined}
+                onBlur={isAuthenticated && idx === 0 ? handleContentChange : undefined}
+                onKeyDown={isAuthenticated && idx === 0 ? handleKeyDown : undefined}
+                onKeyUp={isAuthenticated && idx === 0 ? handleSelectionChange : undefined}
+                onDragOver={isAuthenticated && idx === 0 ? handleDragOver : undefined}
+                onDragLeave={isAuthenticated && idx === 0 ? handleDragLeave : undefined}
+                onDrop={isAuthenticated && idx === 0 ? handleDrop : undefined}
+                onCopy={isAuthenticated && idx === 0 ? handleCopy : undefined}
+                onPaste={isAuthenticated && idx === 0 ? handlePaste : undefined}
                 data-placeholder="Start writing your document..."
                 dangerouslySetInnerHTML={{ __html: idx === 0 ? renderCollaboratorCursors(highlightIssues(pageContent, grammarIssues)) : pageContent }}
               />

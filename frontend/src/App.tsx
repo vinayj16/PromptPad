@@ -15,6 +15,8 @@ import TemplateGallery from './components/Templates/TemplateGallery';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { CommentsSidebar } from './components/Sidebar/AISidebar';
 import { Message as AIMessage } from './components/Sidebar/AISidebar';
+import { useAuthStore } from './stores/authStore';
+import AuthModal from './components/Auth/AuthModal';
 
 // Notification Context
 const NotificationContext = createContext<any>(null);
@@ -69,6 +71,13 @@ function App() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [aiSidebarMessages, setAISidebarMessages] = useState<AIMessage[]>([]);
+  const { isAuthenticated } = useAuthStore();
+  const [authModalOpen, setAuthModalOpen] = useState(!isAuthenticated);
+  
+  useEffect(() => {
+    if (isAuthenticated) setAuthModalOpen(false);
+    else setAuthModalOpen(true);
+  }, [isAuthenticated]);
 
   // Global keyboard shortcuts
   useHotkeys('ctrl+n', () => setShowStartScreen(true));
@@ -143,6 +152,9 @@ function App() {
           <CollaborationProvider>
             <DarkModeEffect />
             <div className="h-screen flex flex-col bg-white overflow-hidden">
+              {(!isAuthenticated || authModalOpen) && (
+                <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+              )}
               {/* Title Bar (fixed) */}
               <div className="sticky top-0 z-30">
                 <TitleBar 
@@ -150,6 +162,7 @@ function App() {
                   sidebarOpen={sidebarOpen}
                   setSidebarOpen={setSidebarOpen}
                   onCommentsClick={() => setCommentsOpen((v) => !v)}
+                  onShowLogin={() => setAuthModalOpen(true)}
                 />
                 {/* Ribbon Toolbar (fixed below TitleBar) */}
                 <Ribbon 
@@ -165,7 +178,7 @@ function App() {
               <div className="flex-1 flex overflow-hidden relative" style={{ minHeight: 0 }}>
                 {/* Editor Area */}
                 <div className="flex-1 flex flex-col min-h-0">
-                  <Editor />
+                  <Editor onShowLogin={() => setAuthModalOpen(true)} loginModalOpen={authModalOpen} />
                 </div>
                 {/* AI Sidebar */}
                 <AISidebar 

@@ -7,6 +7,7 @@ import {
 import { useDocument } from '../../context/DocumentContext';
 import { useUI } from '../../context/UIContext';
 import { useCollaboration } from '../../context/CollaborationContext';
+import { useAuthStore } from '../../stores/authStore';
 
 interface TitleBarProps {
   onFileClick: () => void;
@@ -15,10 +16,11 @@ interface TitleBarProps {
   onCommentsClick: () => void;
 }
 
-const TitleBar: React.FC<TitleBarProps> = ({ onFileClick, sidebarOpen, setSidebarOpen, onCommentsClick }) => {
+const TitleBar: React.FC<TitleBarProps & { onShowLogin?: () => void }> = ({ onFileClick, sidebarOpen, setSidebarOpen, onCommentsClick, onShowLogin }) => {
   const { document: doc, saveDocument } = useDocument();
   const { ui, toggleDarkMode } = useUI();
   const { shareDocument } = useCollaboration();
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   // Modal states
   const [showShare, setShowShare] = useState(false);
@@ -130,18 +132,14 @@ const TitleBar: React.FC<TitleBarProps> = ({ onFileClick, sidebarOpen, setSideba
     ) : null;
   };
 
-  // User Profile Modal (replaces 'coming soon')
+  // User Profile Modal (uses real user data)
   const UserProfileModal = ({ show, onClose }: { show: boolean; onClose: () => void }) => {
-    // For demo, use local state; in production, use auth context/store
-    const [name, setName] = useState('Vinay');
-    const [email, setEmail] = useState('user@example.com');
-
+    const name = user?.firstName ? `${user.firstName} ${user.lastName}` : user?.username || 'User';
+    const email = user?.email || '';
     const handleLogout = () => {
-      // For demo, just alert; in production, call logout from auth store
-      alert('Logged out!');
+      logout();
       onClose();
     };
-
     return show ? (
       <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
@@ -149,9 +147,9 @@ const TitleBar: React.FC<TitleBarProps> = ({ onFileClick, sidebarOpen, setSideba
           <h2 className="text-xl font-semibold mb-4">User Profile</h2>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Name</label>
-            <input className="w-full border rounded px-3 py-2 mb-2" value={name} onChange={e => setName(e.target.value)} />
+            <input className="w-full border rounded px-3 py-2 mb-2" value={name} readOnly />
             <label className="block text-sm font-medium mb-1">Email</label>
-            <input className="w-full border rounded px-3 py-2" value={email} onChange={e => setEmail(e.target.value)} />
+            <input className="w-full border rounded px-3 py-2" value={email} readOnly />
           </div>
           <div className="flex justify-end space-x-2">
             <button className="px-4 py-2 bg-gray-200 rounded" onClick={onClose}>Close</button>
@@ -272,12 +270,16 @@ const TitleBar: React.FC<TitleBarProps> = ({ onFileClick, sidebarOpen, setSideba
           <Bot className="w-4 h-4" />
         </button>
 
-        {/* User */}
-        <button className="p-2 hover:bg-gray-700 rounded-md transition-colors" onClick={() => setShowUser(true)} title="User profile">
-          <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
-            <UserIcon className="w-4 h-4 text-white" />
-          </div>
-        </button>
+        {/* User/Login Button */}
+        {isAuthenticated ? (
+          <button className="p-2 hover:bg-gray-700 rounded-md transition-colors" onClick={() => isAuthenticated && setShowUser(true)} title="User profile">
+            <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+              <UserIcon className="w-4 h-4 text-white" />
+            </div>
+          </button>
+        ) : (
+          <button className="px-4 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white font-medium" onClick={onShowLogin} title="Login">Login</button>
+        )}
 
         {/* Window Controls */}
         <div className="flex items-center ml-4">
@@ -296,7 +298,8 @@ const TitleBar: React.FC<TitleBarProps> = ({ onFileClick, sidebarOpen, setSideba
       {/* Modals */}
       <ShareModal show={showShare} onClose={() => setShowShare(false)} link={window.location.href} />
       <CommentsModal show={showComments} onClose={() => setShowComments(false)} />
-      <UserProfileModal show={showUser} onClose={() => setShowUser(false)} />
+      {/* User Profile Modal: Only render if authenticated */}
+      {isAuthenticated && <UserProfileModal show={showUser} onClose={() => setShowUser(false)} />}
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">

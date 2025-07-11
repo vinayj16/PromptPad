@@ -8,6 +8,7 @@ import { useNotification } from '../../App';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
+import { useAuthStore } from '../../stores/authStore';
 
 interface FileMenuProps {
   onClose: () => void;
@@ -26,6 +27,8 @@ const FileMenu: React.FC<FileMenuProps> = ({ onClose, onNewDocument }) => {
   const [showPreferences, setShowPreferences] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
+
+  const { logout } = useAuthStore();
 
   // Open file handler
   const handleOpen = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,6 +129,11 @@ const FileMenu: React.FC<FileMenuProps> = ({ onClose, onNewDocument }) => {
     setRecentFiles(JSON.parse(localStorage.getItem('recent-documents') || '[]'));
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    onClose();
+  };
+
   const menuItems = [
     { id: 'new', label: 'New', icon: FilePlus, action: () => { newDocument(); onClose(); } },
     { id: 'open', label: 'Open', icon: FolderOpen, action: () => fileInputRef.current?.click() },
@@ -140,7 +148,7 @@ const FileMenu: React.FC<FileMenuProps> = ({ onClose, onNewDocument }) => {
     { id: 'print', label: 'Print', icon: Printer, action: () => window.print() },
     { id: 'account', label: 'Account Settings', icon: User, action: () => setShowAccount(true) },
     { id: 'preferences', label: 'Preferences', icon: Settings, action: () => setShowPreferences(true) },
-    { id: 'logout', label: 'Logout', icon: LogOut, action: () => setShowLogout(true) },
+    { id: 'logout', label: 'Logout', icon: LogOut, action: handleLogout },
     { id: 'images', label: 'Images', icon: ImageIcon, action: () => setShowImagesModal(true) },
     { id: 'help', label: 'Help', icon: HelpCircle, action: () => setShowHelp(true) },
   ];
@@ -348,8 +356,11 @@ const FileMenu: React.FC<FileMenuProps> = ({ onClose, onNewDocument }) => {
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
             <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowLogout(false)}>×</button>
             <h2 className="text-xl font-semibold mb-4">Logout</h2>
-            <p className="text-gray-700">You have been logged out. (Implement real logout logic here.)</p>
-            <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded" onClick={() => setShowLogout(false)}>Close</button>
+            <p className="text-gray-700">Are you sure you want to logout?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button className="px-4 py-2 bg-gray-200 rounded" onClick={() => setShowLogout(false)}>Cancel</button>
+              <button className="px-4 py-2 bg-green-600 text-white rounded" onClick={handleLogout}>Logout</button>
+            </div>
           </div>
         </div>
       )}

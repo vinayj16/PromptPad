@@ -182,6 +182,11 @@ app.get('/health', (req, res) => {
 // Setup Socket.IO for real-time collaboration
 setupCollaborationSocket(io, logger);
 
+// API 404 handler (for /api/* routes)
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'API route not found' });
+});
+
 // Serve static files from the frontend build
 app.use(express.static(join(__dirname, '../frontend/dist')));
 
