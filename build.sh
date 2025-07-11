@@ -10,6 +10,6 @@ npm run build
 
 echo "Installing backend dependencies..."
 cd ../backend
-npm ci --production
+npm ci --omit=dev --verbose
 
 echo "Build completed successfully!" 
